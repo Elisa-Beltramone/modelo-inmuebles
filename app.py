@@ -4,7 +4,7 @@ import re
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 import streamlit as st
-st.title("Mi modelo de precios de inmuebles")
+st.title("Modelo de precios de inmuebles")
 
 # 1. Leer el dataset
 df = pd.read_csv("Dataset_original.csv", dtype=str)
