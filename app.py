@@ -148,10 +148,10 @@ estados = sorted([col.replace("Estado_", "") for col in df.columns if col.starts
 inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
 
 # Formulario de entrada
-sup_total = st.number_input("Superficie total (m2)", min_value=1.0, value=60.0)
+sup_total = st.number_input("Superficie total (m2)", min_value=5.0, max_value=5000,value=60.0)
 ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
 antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
-valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, value=5000.0)
+valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, max_value=1200500, value=5000.0)
 barrio = st.selectbox("Barrio", barrios)
 estado = st.selectbox("Estado", estados)
 inmueble = st.selectbox("Tipo de inmueble", inmuebles)
