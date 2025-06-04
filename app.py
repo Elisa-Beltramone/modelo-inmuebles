@@ -10,7 +10,7 @@ st.title("Modelo de precios de inmuebles")
 df = pd.read_csv("Dataset_original.csv", dtype=str)
 
 # 2. Eliminar columnas innecesarias
-df = df.drop(columns=["URL", "Sup_Descubierta"], errors='ignore')
+df = df.drop(columns=["URL", "Sup_Descubierta", "Sup_cubierta"], errors='ignore')
 
 
 # 3. Filtrar solo operaciones de venta
@@ -60,7 +60,7 @@ def extract_number(s):
         return float(match.group(0).replace(",", "."))
     return 0
 
-df["Sup_cubierta"] = df["Sup_cubierta"].apply(extract_number)
+#df["Sup_cubierta"] = df["Sup_cubierta"].apply(extract_number)
 df["Sup_Total"] = df["Sup_Total"].apply(extract_number)
 df["Antiguedad"] = df["Antiguedad"].str.extract(r"(\d+)", expand=False).astype(float).fillna(0)
 
