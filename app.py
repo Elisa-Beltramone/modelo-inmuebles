@@ -10,7 +10,7 @@ st.title("Modelo de precios de inmuebles")
 df = pd.read_csv("Dataset_original.csv", dtype=str)
 
 # 2. Eliminar columnas innecesarias
-df = df.drop(columns=["URL", "Sup_Descubierta", "Sup_cubierta"], errors='ignore')
+df = df.drop(columns=["URL", "Sup_cubierta", "Sup_Descubierta"], errors='ignore')
 
 
 # 3. Filtrar solo operaciones de venta
@@ -60,7 +60,7 @@ def extract_number(s):
         return float(match.group(0).replace(",", "."))
     return 0
 
-#df["Sup_cubierta"] = df["Sup_cubierta"].apply(extract_number)
+#df["Sup_Descubierta"] = df["Sup_Descubierta"].apply(extract_number)
 df["Sup_Total"] = df["Sup_Total"].apply(extract_number)
 df["Antiguedad"] = df["Antiguedad"].str.extract(r"(\d+)", expand=False).astype(float).fillna(0)
 
@@ -148,7 +148,6 @@ estados = sorted([col.replace("Estado_", "") for col in df.columns if col.starts
 inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
 
 # Formulario de entrada
-sup_cubierta = st.number_input("Superficie cubierta (m2)", min_value=1.0, value=50.0)
 sup_total = st.number_input("Superficie total (m2)", min_value=1.0, value=60.0)
 ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
 antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
@@ -157,11 +156,10 @@ barrio = st.selectbox("Barrio", barrios)
 estado = st.selectbox("Estado", estados)
 inmueble = st.selectbox("Tipo de inmueble", inmuebles)
 
-# Botón para predecir
+# Botón para predecir, con validación de valor mínimo
 if st.button("Predecir valor en USD"):
     # Construye un DataFrame con los datos ingresados
     input_dict = {
-        "Sup_cubierta": [sup_cubierta],
         "Sup_Total": [sup_total],
         "Ambientes": [ambientes],
         "Antiguedad": [antiguedad],
@@ -180,4 +178,8 @@ if st.button("Predecir valor en USD"):
     input_df = input_df.reindex(columns=X.columns, fill_value=0)
     # Predice
     prediccion = modelo.predict(input_df)[0]
-    st.success(f"El valor estimado en USD es: {prediccion:,.2f}")
+    # Validación de valor mínimo
+    if prediccion < 20000:
+        st.error("El valor estimado es inferior a 20,000 USD. No se muestran predicciones por debajo de ese valor.")
+    else:
+        st.success(f"El valor estimado en USD es: {prediccion:,.2f}")
