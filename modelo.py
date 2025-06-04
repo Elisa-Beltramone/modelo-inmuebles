@@ -3,14 +3,14 @@ import numpy as np
 import re
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
-
-
+import streamlit as st
+st.title("Modelo de precios de inmuebles")
 
 # 1. Leer el dataset
 df = pd.read_csv("Dataset_original.csv", dtype=str)
 
 # 2. Eliminar columnas innecesarias
-df = df.drop(columns=["URL", "Sup_Descubierta"], errors='ignore')
+df = df.drop(columns=["URL", "Sup_cubierta", "Sup_Descubierta"], errors='ignore')
 
 
 # 3. Filtrar solo operaciones de venta
@@ -60,7 +60,7 @@ def extract_number(s):
         return float(match.group(0).replace(",", "."))
     return 0
 
-df["Sup_cubierta"] = df["Sup_cubierta"].apply(extract_number)
+#df["Sup_Descubierta"] = df["Sup_Descubierta"].apply(extract_number)
 df["Sup_Total"] = df["Sup_Total"].apply(extract_number)
 df["Antiguedad"] = df["Antiguedad"].str.extract(r"(\d+)", expand=False).astype(float).fillna(0)
 
@@ -137,3 +137,49 @@ print("Coeficientes:")
 for name, coef in zip(X.columns, modelo.coef_):
     print(f"{name}: {coef}")
 
+
+
+
+st.header("Ingresá los datos del inmueble para predecir el valor en USD")
+
+# Obtén las opciones únicas de tu dataset para los selectbox
+barrios = sorted([col.replace("Barrio_", "") for col in df.columns if col.startswith("Barrio_")])
+estados = sorted([col.replace("Estado_", "") for col in df.columns if col.startswith("Estado_")])
+inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
+
+# Formulario de entrada
+sup_total = st.number_input("Superficie total (m2)", min_value=5.0, max_value=5000,value=60.0)
+ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
+antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
+valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, max_value=1200500, value=5000.0)
+barrio = st.selectbox("Barrio", barrios)
+estado = st.selectbox("Estado", estados)
+inmueble = st.selectbox("Tipo de inmueble", inmuebles)
+
+# Botón para predecir, con validación de valor mínimo
+if st.button("Predecir valor en USD"):
+    # Construye un DataFrame con los datos ingresados
+    input_dict = {
+        "Sup_Total": [sup_total],
+        "Ambientes": [ambientes],
+        "Antiguedad": [antiguedad],
+        "Valor_Expensas": [valor_expensas],
+    }
+    # Agrega las columnas dummy necesarias (todas en 0, excepto la seleccionada en 1)
+    for b in barrios:
+        input_dict[f"Barrio_{b}"] = [1 if b == barrio else 0]
+    for e in estados:
+        input_dict[f"Estado_{e}"] = [1 if e == estado else 0]
+    for i in inmuebles:
+        input_dict[f"Inmueble_{i}"] = [1 if i == inmueble else 0]
+    # Crea el DataFrame de entrada
+    input_df = pd.DataFrame(input_dict)
+    # Asegúrate de que las columnas estén en el mismo orden que X
+    input_df = input_df.reindex(columns=X.columns, fill_value=0)
+    # Predice
+    prediccion = modelo.predict(input_df)[0]
+    # Validación de valor mínimo
+    if prediccion < 20000:
+        st.error("El valor estimado es inferior a 20,000 USD. No se muestran predicciones por debajo de ese valor.")
+    else:
+        st.success(f"El valor estimado en USD es: {prediccion:,.2f}")
