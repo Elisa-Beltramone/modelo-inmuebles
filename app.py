@@ -151,13 +151,12 @@ estados = sorted([col.replace("Estado_", "") for col in df.columns if col.starts
 inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
 
 # Formulario de entrada
-superficie = st.number_input("Superficie", min_value=5.0, max_value=5000.0,value=30.0)
+superficie = st.number_input("Superficie", min_value=5.0, max_value=5000.0,value=60.0)
 min_ambientes = max(1, int((superficie - 37) // 7) + 1)
 ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=10, value=min_ambientes)
 #ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
 st.info(
-    "💡 **Sugerencia:** Para superficies muy grandes, la cantidad de ambientes debería ser acorde. "
-    "Considerá ingresar un número mayor de ambientes para obtener una estimación más realista."
+    "💡 **Sugerencia:** Para superficies muy grandes, la cantidad de ambientes debería ser acorde para obtener una estimación más realista."
 )
 antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
 valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, max_value=1200500.0, value=5000.0)
@@ -169,7 +168,7 @@ inmueble = st.selectbox("Tipo de inmueble", inmuebles)
 if st.button("Predecir valor en USD"):
     # Construye un DataFrame con los datos ingresados
     input_dict = {
-        "Superficie": [superficie],
+        "Sup_cubierta": [superficie],
         "Ambientes": [ambientes],
         "Antiguedad": [antiguedad],
         "Valor_Expensas": [valor_expensas],
