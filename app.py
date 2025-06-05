@@ -10,7 +10,7 @@ st.title("Modelo de precios de inmuebles")
 df = pd.read_csv("Dataset_original.csv", dtype=str)
 
 # 2. Eliminar columnas innecesarias
-df = df.drop(columns=["URL", "Sup_Descubierta"], errors='ignore')
+df = df.drop(columns=["URL", "Sup_Total", "Sup_Descubierta"], errors='ignore')
 
 
 # 3. Filtrar solo operaciones de venta
