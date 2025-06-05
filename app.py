@@ -160,7 +160,7 @@ inmueble = st.selectbox("Tipo de inmueble", inmuebles)
 if st.button("Predecir valor en USD"):
     # Construye un DataFrame con los datos ingresados
     input_dict = {
-        "Sup_cubierta": [superfice],
+        "Superficie": [superficie],
         "Ambientes": [ambientes],
         "Antiguedad": [antiguedad],
         "Valor_Expensas": [valor_expensas],
