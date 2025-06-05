@@ -109,9 +109,8 @@ df['Barrio'] = df['Barrio'].str.replace(
 df = df.drop(columns=["URL", "Sup_Total", "Sup_Descubierta"], errors='ignore')
 df = df.drop(columns=["Barrio_Ciudad"], errors='ignore')
 
-# Agregar columna valor metro cuadrado
 df = df[df["Sup_cubierta"] > 0]
-df["valor_m2"] = df["Valor_USD"] / df["Sup_cubierta"]
+#df["valor_m2"] = df["Valor_USD"] / df["Sup_cubierta"]
 
 # 19. Verificar estructura y valores faltantes
 print(df.info())
@@ -152,10 +151,14 @@ estados = sorted([col.replace("Estado_", "") for col in df.columns if col.starts
 inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
 
 # Formulario de entrada
-superficie = st.number_input("Superficie cubierta (m2)", min_value=5.0, max_value=5000.0,value=30.0)
-#min_ambientes = max(1, int((superficie - 37) // 5) + 1)
-#ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=10, value=min_ambientes)
-ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
+superficie = st.number_input("Superficie", min_value=5.0, max_value=5000.0,value=30.0)
+min_ambientes = max(1, int((superficie - 37) // 7) + 1)
+ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=10, value=min_ambientes)
+#ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
+st.info(
+    "💡 **Sugerencia:** Para superficies muy grandes, la cantidad de ambientes debería ser acorde. "
+    "Considerá ingresar un número mayor de ambientes para obtener una estimación más realista."
+)
 antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
 valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, max_value=1200500.0, value=5000.0)
 barrio = st.selectbox("Barrio", barrios)
