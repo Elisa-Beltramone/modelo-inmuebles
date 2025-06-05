@@ -109,7 +109,7 @@ df['Barrio'] = df['Barrio'].str.replace(
 df = df.drop(columns=["Barrio_Ciudad"], errors='ignore')
 df = df[df["Sup_cubierta"] > 0]
 df['Estado'] = df['Estado'].replace({'Regular': 'Bueno'})
-df['Estado'] = df['Estado'].fillna('no_informa')
+df['Estado'] = df['Estado'].fillna('Sin informar')
 df = pd.get_dummies(df, columns=["Barrio", "Estado", "Inmueble"], drop_first=False)
 
 # 19. Verificar estructura y valores faltantes
