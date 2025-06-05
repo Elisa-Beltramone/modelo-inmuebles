@@ -157,9 +157,9 @@ estados = sorted([col.replace("Estado_", "") for col in df.columns if col.starts
 inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
 
 # Formulario de entrada
-superficie = st.number_input("Superficie", min_value=15.0, max_value=5000.0,value=60.0)
-min_ambientes = 1 if superficie < 30 else 1 + int((superficie - 30) // 8)
-ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=10, value=min_ambientes)
+superficie = st.number_input("Superficie", min_value=15.0, max_value=300.0,value=60.0)
+min_ambientes = 1 if superficie < 30 else 1 + int((superficie - 30) // 12)
+ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=15, value=min_ambientes)
 #ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
 st.info(
     "💡 **Sugerencia:** Para superficies muy grandes, la cantidad de ambientes debería ser acorde para obtener una estimación más realista."
