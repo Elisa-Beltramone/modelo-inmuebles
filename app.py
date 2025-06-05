@@ -149,7 +149,8 @@ inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.st
 
 # Formulario de entrada
 superficie = st.number_input("Superficie cubierta (m2)", min_value=5.0, max_value=5000.0,value=60.0)
-ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
+min_ambientes = max(1, int((superficie - 35) // 5) + 1)
+ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=10, value=min_ambientes)
 antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
 valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, max_value=1200500.0, value=5000.0)
 barrio = st.selectbox("Barrio", barrios)
