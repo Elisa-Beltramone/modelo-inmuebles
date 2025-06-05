@@ -147,8 +147,12 @@ inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.st
 
 # Formulario de entrada
 superficie = st.number_input("Superficie", min_value=15.0, max_value=300.0,value=60.0)
-min_ambientes = 1 if superficie < 30 else 1 + int((superficie - 30) // 12)
-ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=15, value=min_ambientes)
+#max_ambientes = 15
+#if min_ambientes > max_ambientes:
+#    min_ambientes = max_ambientes
+#ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=max_ambientes, value=min_ambientes)
+#min_ambientes = 1 if superficie < 30 else 1 + int((superficie - 30) // 12)
+#ambientes = st.number_input("Ambientes", min_value=min_ambientes, max_value=15, value=min_ambientes)
 #ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
 st.info(
     "💡 **Sugerencia:** Para superficies muy grandes, la cantidad de ambientes debería ser acorde para obtener una estimación más realista."
@@ -164,7 +168,7 @@ if st.button("Predecir valor en USD"):
     # Construye un DataFrame con los datos ingresados
     input_dict = {
         "Sup_cubierta": [superficie],
-        "Ambientes": [ambientes],
+        #"Ambientes": [ambientes],
         "Antiguedad": [antiguedad],
         "Valor_Expensas": [valor_expensas],
     }
