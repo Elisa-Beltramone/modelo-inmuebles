@@ -3,6 +3,7 @@ import numpy as np
 import re
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.model_selection import train_test_split
 import streamlit as st
 st.title("Modelo de precios de inmuebles")
 
@@ -71,8 +72,6 @@ df["Valor_USD"] = np.where(
 )
 df = df[df["Valor_USD"].notna()]
 
-# Agregar valor por metro cuadrado
-df["valor_m2"] = df["Valor_USD"] / df["Sup_cubierta"]
 
 # 15. Eliminar columnas innecesarias
 df = df.drop(columns=["Operacion", "Latitud", "Longitud", "Lastmod", "Moneda", "Valor_Inmueble", "Valor_Num"], errors='ignore')
@@ -118,7 +117,9 @@ print(df.describe())
 print(df.isna().sum())
 
 df["Estado"] = df["Estado"].fillna("Regular")
-#df["Estado"] = df["Estado"].replace("Regular", "Bueno")
+df["Estado"] = df["Estado"].replace("Regular", "Bueno")
+df["Estado"] = df["Estado"].replace("Muy Bueno", "Bueno")
+
 
 # One-hot encoding y eliminación de columnas originales
 df = pd.get_dummies(df, columns=["Barrio", "Estado", "Inmueble"], drop_first=False)
@@ -127,14 +128,16 @@ df = pd.get_dummies(df, columns=["Barrio", "Estado", "Inmueble"], drop_first=Fal
 X = df.drop(columns=['Valor_USD'])
 y = df['Valor_USD']
 
-# 3. Ajustar el modelo
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 modelo = LinearRegression()
-modelo.fit(X, y)
+modelo.fit(X_train, y_train)
 
 # 4. Predicciones y métricas básicas
-y_pred = modelo.predict(X)
-r2 = r2_score(y, y_pred)
-mse = mean_squared_error(y, y_pred)
+y_pred = modelo.predict(X_test)
+r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+
 
 print("R^2:", r2)
 print("MSE:", mse)
