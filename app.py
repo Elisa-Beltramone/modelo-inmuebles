@@ -117,6 +117,9 @@ print(df.info())
 print(df.describe())
 print(df.isna().sum())
 
+df["Estado"] = df["Estado"].fillna("Regular")
+#df["Estado"] = df["Estado"].replace("Regular", "Bueno")
+
 # One-hot encoding y eliminación de columnas originales
 df = pd.get_dummies(df, columns=["Barrio", "Estado", "Inmueble"], drop_first=False)
 
