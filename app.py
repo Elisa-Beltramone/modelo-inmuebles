@@ -10,7 +10,7 @@ st.title("Modelo de precios de inmuebles")
 df = pd.read_csv("Dataset_original.csv", dtype=str)
 
 # 2. Eliminar columnas innecesarias
-df = df.drop(columns=["URL", "Sup_cubierta", "Sup_Descubierta"], errors='ignore')
+df = df.drop(columns=["URL", "Sup_Descubierta"], errors='ignore')
 
 
 # 3. Filtrar solo operaciones de venta
@@ -60,8 +60,8 @@ def extract_number(s):
         return float(match.group(0).replace(",", "."))
     return 0
 
-#df["Sup_Descubierta"] = df["Sup_Descubierta"].apply(extract_number)
-df["Sup_Total"] = df["Sup_Total"].apply(extract_number)
+df["Sup_cubierta"] = df["Sup_cubierta"].apply(extract_number)
+#df["Sup_Total"] = df["Sup_Total"].apply(extract_number)
 df["Antiguedad"] = df["Antiguedad"].str.extract(r"(\d+)", expand=False).astype(float).fillna(0)
 
 # 14. Agregar columna moneda y convertir valores a USD
@@ -148,7 +148,7 @@ estados = sorted([col.replace("Estado_", "") for col in df.columns if col.starts
 inmuebles = sorted([col.replace("Inmueble_", "") for col in df.columns if col.startswith("Inmueble_")])
 
 # Formulario de entrada
-sup_total = st.number_input("Superficie total (m2)", min_value=5.0, max_value=5000.0,value=60.0)
+superficie = st.number_input("Superficie cubierta (m2)", min_value=5.0, max_value=5000.0,value=60.0)
 ambientes = st.number_input("Ambientes", min_value=1, max_value=10, value=2)
 antiguedad = st.number_input("Antigüedad (años)", min_value=0, max_value=100, value=20)
 valor_expensas = st.number_input("Expensas (ARS)", min_value=0.0, max_value=1200500.0, value=5000.0)
@@ -160,7 +160,7 @@ inmueble = st.selectbox("Tipo de inmueble", inmuebles)
 if st.button("Predecir valor en USD"):
     # Construye un DataFrame con los datos ingresados
     input_dict = {
-        "Sup_Total": [sup_total],
+        "Sup_cubierta": [superfice],
         "Ambientes": [ambientes],
         "Antiguedad": [antiguedad],
         "Valor_Expensas": [valor_expensas],
