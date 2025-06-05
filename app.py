@@ -3,7 +3,6 @@ import numpy as np
 import re
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
-from sklearn.model_selection import train_test_split
 import streamlit as st
 st.title("Modelo de precios de inmuebles")
 
@@ -72,9 +71,10 @@ df["Valor_USD"] = np.where(
 )
 df = df[df["Valor_USD"].notna()]
 
-
 # 15. Eliminar columnas innecesarias
 df = df.drop(columns=["Operacion", "Latitud", "Longitud", "Lastmod", "Moneda", "Valor_Inmueble", "Valor_Num"], errors='ignore')
+df = df.drop(columns=["URL", "Sup_Total", "Sup_Descubierta"], errors='ignore')
+
 
 # 16. Eliminar outliers en Valor_USD
 Q1 = df["Valor_USD"].quantile(0.25)
@@ -104,40 +104,31 @@ df['Barrio'] = df['Barrio'].str.replace(
     r'Venta en |Alquiler en |Alquiler temporal en ', '', regex=True
 )
 
-# Eliminar columnas innecesarias
-df = df.drop(columns=["URL", "Sup_Total", "Sup_Descubierta"], errors='ignore')
-df = df.drop(columns=["Barrio_Ciudad"], errors='ignore')
+# One-hot encoding y eliminación de columnas originales
 
+df = df.drop(columns=["Barrio_Ciudad"], errors='ignore')
 df = df[df["Sup_cubierta"] > 0]
-#df["valor_m2"] = df["Valor_USD"] / df["Sup_cubierta"]
+df['Estado'] = df['Estado'].replace({'Regular': 'Bueno'})
+df['Estado'] = df['Estado'].fillna('no_informa')
+df = pd.get_dummies(df, columns=["Barrio", "Estado", "Inmueble"], drop_first=False)
 
 # 19. Verificar estructura y valores faltantes
 print(df.info())
 print(df.describe())
 print(df.isna().sum())
 
-df["Estado"] = df["Estado"].fillna("Regular")
-df["Estado"] = df["Estado"].replace("Regular", "Bueno")
-df["Estado"] = df["Estado"].replace("Muy Bueno", "Bueno")
-
-
-# One-hot encoding y eliminación de columnas originales
-df = pd.get_dummies(df, columns=["Barrio", "Estado", "Inmueble"], drop_first=False)
-
 
 X = df.drop(columns=['Valor_USD'])
 y = df['Valor_USD']
 
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# 3. Ajustar el modelo
 modelo = LinearRegression()
-modelo.fit(X_train, y_train)
+modelo.fit(X, y)
 
 # 4. Predicciones y métricas básicas
-y_pred = modelo.predict(X_test)
-r2 = r2_score(y_test, y_pred)
-mse = mean_squared_error(y_test, y_pred)
-
+y_pred = modelo.predict(X)
+r2 = r2_score(y, y_pred)
+mse = mean_squared_error(y, y_pred)
 
 print("R^2:", r2)
 print("MSE:", mse)
@@ -145,8 +136,6 @@ print("Intercepto:", modelo.intercept_)
 print("Coeficientes:")
 for name, coef in zip(X.columns, modelo.coef_):
     print(f"{name}: {coef}")
-
-
 
 
 st.header("Ingresá los datos del inmueble para predecir el valor en USD")
